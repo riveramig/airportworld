@@ -16,6 +16,7 @@ public class PlaneState extends StateBESA {
     private long timeToFillInGate;
     private Airport currentAirport;
     private Gate currentGate;
+    private boolean amIFilled;
     private boolean amIFlying;
     private String alias;
 
@@ -25,6 +26,7 @@ public class PlaneState extends StateBESA {
         this.currentAirport = initAirport;
         this.currentGate = initGate;
         this.amIFlying = false;
+        this.amIFilled = false;
     }
 
 
@@ -76,6 +78,14 @@ public class PlaneState extends StateBESA {
         this.itinerary = itinerary;
     }
 
+    public boolean isAmIFilled() {
+        return amIFilled;
+    }
+
+    public void setAmIFilled(boolean amIFilled) {
+        this.amIFilled = amIFilled;
+    }
+
     @Override
     public String toString() {
         return "PlaneState{" +
@@ -84,6 +94,7 @@ public class PlaneState extends StateBESA {
                 ", timeToFillInGate=" + timeToFillInGate +
                 ", currentAirport=" + currentAirport +
                 ", currentGate=" + currentGate +
+                ", amIFilled=" + amIFilled +
                 ", amIFlying=" + amIFlying +
                 ", alias='" + alias + '\'' +
                 '}';

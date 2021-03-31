@@ -1,0 +1,11 @@
+package avion;
+
+public enum PlaneMessageType {
+    WHERE_AM_I,
+    RADAR_SCAN,
+    SEND_WARNING_PLANE_COLLISION,
+    SEND_DECISION_PLANE_COLLISION,
+    ASK_LTC_GATEWAY,
+    ASK_ATC_GATEWAY,
+    FILL_PLANE
+}

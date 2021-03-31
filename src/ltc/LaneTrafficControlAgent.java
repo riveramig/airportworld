@@ -18,6 +18,7 @@ public class LaneTrafficControlAgent extends AgentBESA {
     public void setupAgent() {
         LaneTrafficControlState ltcState = (LaneTrafficControlState) this.getState();
         ltcState.setAtc(this.atcAgent);
+        ltcState.setAlias(this.getAlias());
     }
 
     @Override

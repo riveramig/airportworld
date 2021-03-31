@@ -5,11 +5,13 @@ public class Itinerary {
     private String gate;
     private String runway;
     private Airport airportTo;
+    private long flightDuration;
 
-    public Itinerary(String gate, String runway, Airport airportTo) {
+    public Itinerary(String gate, String runway, Airport airportTo, long flightDuration) {
         this.gate = gate;
         this.runway = runway;
         this.airportTo = airportTo;
+        this.flightDuration = flightDuration;
     }
 
     public String getGate() {
@@ -36,12 +38,21 @@ public class Itinerary {
         this.airportTo = airportTo;
     }
 
+    public long getFlightDuration() {
+        return flightDuration;
+    }
+
+    public void setFlightDuration(long flightDuration) {
+        this.flightDuration = flightDuration;
+    }
+
     @Override
     public String toString() {
         return "Itinerary{" +
                 "gate='" + gate + '\'' +
-                ", runaWay='" + runway + '\'' +
+                ", runway='" + runway + '\'' +
                 ", airportTo=" + airportTo +
+                ", flightDuration=" + flightDuration +
                 '}';
     }
 }

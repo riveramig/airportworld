@@ -11,11 +11,13 @@ import atc.AirTrafficControlGuard;
 import atc.AirTrafficControlState;
 import avion.PlaneAgent;
 import avion.PlaneGuard;
+import avion.PlaneMessageType;
 import avion.PlaneState;
 import ltc.LaneTrafficControlAgent;
 import ltc.LaneTrafficControlGuard;
 import ltc.LaneTrafficControlState;
 import messages.MessageGeneric;
+import messages.PlaneMessage;
 import misc.Airport;
 import misc.Gate;
 import misc.Itinerary;
@@ -35,7 +37,7 @@ public class airportUniverse {
             Airport dummyAirport = new Airport("madrid", null,null);
 
             // Itinerario avion 1 Este indica puertas de embarque y pistas a aterrizar en el aeropuerto de destino
-            Itinerary it1 = new Itinerary("dorado-g-0","dorado-r-0",dummyAirport);
+            Itinerary it1 = new Itinerary("dorado-g-0","dorado-r-0",dummyAirport,10000);
 
             PlaneAgent avianca01 = createPlaneAgent("avianca01",elDorado, CabinEnum.LARGE,elDorado.getGates()[0]);
             // Se adicionan los itinerarios
@@ -47,8 +49,8 @@ public class airportUniverse {
 
             // mensaje inicial
             AgHandlerBESA ah = adm.getHandlerByAid(avianca01.getAid());
-            MessageGeneric message = new MessageGeneric("Hola");
-            EventBESA msj = new EventBESA(PlaneGuard.class.getName(), message);
+            PlaneMessage planeMessage = new PlaneMessage(PlaneMessageType.WHERE_AM_I);
+            EventBESA msj = new EventBESA(PlaneGuard.class.getName(), planeMessage);
             ah.sendEvent(msj);
 
 
@@ -61,8 +63,8 @@ public class airportUniverse {
     public static Airport buildElDorado() {
         Gate[] gates = createGates("dorado-g",5);
         Runway[] runways = createRunways("dorado-r",2);
-        AirTrafficControlAgent atcDorado = createAgentATC(runways);
-        LaneTrafficControlAgent ltcDorado = createAgentLTC(gates);
+        AirTrafficControlAgent atcDorado = createAgentATC("dorado-atc", runways);
+        LaneTrafficControlAgent ltcDorado = createAgentLTC("dorado-ltc",gates);
         if(atcDorado == null || ltcDorado == null){
             throw new RuntimeException("atc o ltc del dorado son null!!");
         }
@@ -86,24 +88,24 @@ public class airportUniverse {
         }
     }
 
-    private static synchronized AirTrafficControlAgent createAgentATC(Runway... runways) {
+    private static synchronized AirTrafficControlAgent createAgentATC(String alias, Runway... runways) {
         try {
             AirTrafficControlState atcState = new AirTrafficControlState(runways);
             StructBESA structATC = new StructBESA();
             structATC.bindGuard(AirTrafficControlGuard.class);
-            return new AirTrafficControlAgent("",atcState,structATC,PSSWD);
+            return new AirTrafficControlAgent(alias,atcState,structATC,PSSWD);
         }catch (ExceptionBESA ex) {
             ReportBESA.error(ex);
             return null;
         }
     }
 
-    private static synchronized LaneTrafficControlAgent createAgentLTC(Gate... gates) {
+    private static synchronized LaneTrafficControlAgent createAgentLTC(String alias, Gate... gates) {
         try {
             LaneTrafficControlState ltcState = new LaneTrafficControlState(gates);
             StructBESA structLTC = new StructBESA();
             structLTC.bindGuard(LaneTrafficControlGuard.class);
-            return new LaneTrafficControlAgent("",ltcState,structLTC,PSSWD);
+            return new LaneTrafficControlAgent(alias,ltcState,structLTC,PSSWD);
         }catch (ExceptionBESA ex) {
             ReportBESA.error(ex);
             return null;

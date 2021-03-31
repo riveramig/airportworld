@@ -11,6 +11,7 @@ import java.util.List;
 public class LaneTrafficControlState extends StateBESA {
 
     private AirTrafficControlAgent atc;
+    private String alias;
 
     private List<Gate> gates = new ArrayList<>();
 
@@ -39,10 +40,19 @@ public class LaneTrafficControlState extends StateBESA {
         return gates;
     }
 
+    public String getAlias() {
+        return alias;
+    }
+
+    public void setAlias(String alias) {
+        this.alias = alias;
+    }
+
     @Override
     public String toString() {
         return "LaneTrafficControlState{" +
                 "atc=" + atc +
+                ", alias='" + alias + '\'' +
                 ", gates=" + gates +
                 '}';
     }
