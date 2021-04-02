@@ -6,16 +6,20 @@ import avion.PlaneMessageType;
 public class PlaneMessage extends DataBESA {
 
     private PlaneMessageType type;
-    private String content;
+    private String metaContent;
+    private String gateId;
+    private String runwayId;
 
-    public PlaneMessage(PlaneMessageType type, String content) {
+    public PlaneMessage(PlaneMessageType type, String metaContent) {
         this.type = type;
-        this.content = content;
+        this.metaContent = metaContent;
     }
 
     public PlaneMessage(PlaneMessageType type) {
         this.type = type;
     }
+
+    public PlaneMessage(){}
 
     public void setType(PlaneMessageType type) {
         this.type = type;
@@ -25,11 +29,27 @@ public class PlaneMessage extends DataBESA {
         return type;
     }
 
-    public String getContent() {
-        return content;
+    public String getMetaContent() {
+        return metaContent;
     }
 
-    public void setContent(String content) {
-        this.content = content;
+    public String getGateId() {
+        return gateId;
+    }
+
+    public void setGateId(String gateId) {
+        this.gateId = gateId;
+    }
+
+    public String getRunwayId() {
+        return runwayId;
+    }
+
+    public void setRunwayId(String runwayId) {
+        this.runwayId = runwayId;
+    }
+
+    public void setMetaContent(String metaContent) {
+        this.metaContent = metaContent;
     }
 }

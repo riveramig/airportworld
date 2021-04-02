@@ -18,6 +18,7 @@ public class AirTrafficControlAgent extends AgentBESA {
     public void setupAgent() {
         AirTrafficControlState atcState = (AirTrafficControlState) this.getState();
         atcState.setLtc(this.ltcAgent);
+        atcState.setAlias(this.getAlias());
     }
 
     @Override

@@ -13,6 +13,7 @@ public class Runway {
     public Runway() {
         this.runawayId = UUID.randomUUID().toString();
         this.isUsable =true;
+        this.isOccupied =false;
     }
 
     public Runway(String id) {
@@ -49,5 +50,15 @@ public class Runway {
 
     public void setUsable(boolean usable) {
         isUsable = usable;
+    }
+
+    @Override
+    public String toString() {
+        return "Runway{" +
+                "isOccupied=" + isOccupied +
+                ", runawayId='" + runawayId + '\'' +
+                ", agentOnRunaway=" + agentOnRunaway +
+                ", isUsable=" + isUsable +
+                '}';
     }
 }

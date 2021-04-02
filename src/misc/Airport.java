@@ -3,6 +3,8 @@ package misc;
 import atc.AirTrafficControlAgent;
 import ltc.LaneTrafficControlAgent;
 
+import java.util.Arrays;
+
 public class Airport {
 
     private String name;
@@ -64,5 +66,12 @@ public class Airport {
 
     public void setLtcAgent(LaneTrafficControlAgent ltcAgent) {
         this.ltcAgent = ltcAgent;
+    }
+
+    public Runway findRunwayById(String runwayId) {
+        return Arrays.stream(this.runaways).filter(runway -> runway.getRunawayId().equalsIgnoreCase(runwayId)).findAny().orElse(null);
+    }
+    public Gate findGateByName(String gateId) {
+        return Arrays.stream(this.gates).filter(gate -> gate.getGateId().equalsIgnoreCase(gateId)).findAny().orElse(null);
     }
 }

@@ -4,6 +4,7 @@ import BESA.Kernel.Agent.StateBESA;
 import misc.Airport;
 import misc.Gate;
 import misc.Itinerary;
+import misc.Runway;
 import utils.CabinEnum;
 import utils.Functions;
 
@@ -16,15 +17,17 @@ public class PlaneState extends StateBESA {
     private long timeToFillInGate;
     private Airport currentAirport;
     private Gate currentGate;
+    private Runway runway;
     private boolean amIFilled;
     private boolean amIFlying;
     private String alias;
 
-    public PlaneState(CabinEnum cabin, Airport initAirport, Gate initGate) {
+    public PlaneState(CabinEnum cabin, Airport initAirport, Gate initGate, Runway initRunway) {
         this.cabin = cabin;
         this.timeToFillInGate = Functions.getRandomCabin(cabin);
         this.currentAirport = initAirport;
         this.currentGate = initGate;
+        this.runway = initRunway;
         this.amIFlying = false;
         this.amIFilled = false;
     }
@@ -42,8 +45,20 @@ public class PlaneState extends StateBESA {
         this.alias = alias;
     }
 
-    public Itinerary retrieveNextAirportItinerary() {
-        return this.itinerary.pop();
+    public void discardItinerary() {
+        this.itinerary.pop();
+    }
+
+    public Runway getRunway() {
+        return runway;
+    }
+
+    public void setRunway(Runway runway) {
+        this.runway = runway;
+    }
+
+    public Itinerary getCurrentItinerary() {
+        return this.itinerary.peek();
     }
 
     public Airport getCurrentAirport() {

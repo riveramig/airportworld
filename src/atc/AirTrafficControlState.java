@@ -12,14 +12,24 @@ public class AirTrafficControlState extends StateBESA {
 
     private List<Runway> runaways = new ArrayList<>();
     private LaneTrafficControlAgent ltc;
+    private String alias;
 
-    public AirTrafficControlState(LaneTrafficControlAgent ltc, Runway... runwaysFill) {
+    public AirTrafficControlState(String alias, LaneTrafficControlAgent ltc, Runway... runwaysFill) {
+        this.alias = alias;
         this.ltc = ltc;
         Arrays.stream(runwaysFill).forEach(runaway -> this.runaways.add(runaway));
     }
 
     public AirTrafficControlState(Runway... runwaysFill) {
         Arrays.stream(runwaysFill).forEach(runaway -> this.runaways.add(runaway));
+    }
+
+    public String getAlias() {
+        return alias;
+    }
+
+    public void setAlias(String alias) {
+        this.alias = alias;
     }
 
     public void addRunway (Runway runway) {
@@ -43,6 +53,7 @@ public class AirTrafficControlState extends StateBESA {
         return "AirTrafficControlState{" +
                 "runaways=" + runaways +
                 ", ltc=" + ltc +
+                ", alias='" + alias + '\'' +
                 '}';
     }
 }
