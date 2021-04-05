@@ -32,7 +32,8 @@ public class AirTrafficControlGuard extends GuardBESA {
                     // Si la pista solicitada no esta disponible, revisa si otra esta libre
                     String anotherRunawayAvailableId = findAnotherRunway(atcState);
                     if(anotherRunawayAvailableId != null ) {
-                        ReportBESA.info("["+atcState.getAlias()+"]"+"Pista solicitada no disponible pero" + anotherRunawayAvailableId+ " esta disponible");
+                        ReportBESA.info("["+atcState.getAlias()+"]"+"Pista solicitada no disponible pero " + anotherRunawayAvailableId+ " esta disponible");
+                        message.setRunwayId(anotherRunawayAvailableId);
                         sendLTCMessage(message, atcState, LaneTrafficControlMessageType.ATC_RUNAWAY_REQUEST_RESPONSE_APPROVE, null);
                         toggleRunway(anotherRunawayAvailableId, atcState);
                     } else {
@@ -59,11 +60,11 @@ public class AirTrafficControlGuard extends GuardBESA {
                     String anotherRunwayAvailable = findAnotherRunway(atcState);
                     if(anotherRunwayAvailable != null) {
                         ReportBESA.info("["+atcState.getAlias()+"]"+"pista de aterrizaje: "+message.getRunwayId() + "no disponible, cambiando pista: "+anotherRunwayAvailable);
-                        planeMessage = new PlaneMessage(PlaneMessageType.ATC_LAND_RESPONSE_APPROVAL);
+                        planeMessage = new PlaneMessage(PlaneMessageType.ATC_LAND_RESPONSE_CHANGE);
                         planeMessage.setRunwayId(anotherRunwayAvailable);
                         toggleRunway(anotherRunwayAvailable,atcState);
                     } else {
-                        ReportBESA.info("["+atcState.getAlias()+"]"+"sin pistas de aterrizaje, solicitando espera"+message.getRunwayId());
+                        ReportBESA.info("["+atcState.getAlias()+"]"+"sin pistas de aterrizaje, solicitando espera "+message.getRunwayId());
                         planeMessage = new PlaneMessage(PlaneMessageType.ATC_LAND_RESPONSE_REJECT);
                         // Tiempo sugerido de espera
                         planeMessage.setMetaContent("3000");
@@ -77,6 +78,10 @@ public class AirTrafficControlGuard extends GuardBESA {
                     e.printStackTrace();
                 }
                 break;
+            case PLANE_LAND_SUCCESSFUL:
+                ReportBESA.info("["+atcState.getAlias()+"]"+"Avion: " + message.getPlaneId()+ " aterrizo exitosamente!! ");
+                toggleRunway(message.getRunwayId(),atcState);
+                break;
         }
     }
 
@@ -85,6 +90,7 @@ public class AirTrafficControlGuard extends GuardBESA {
         LaneTrafficControlMessage messageToSend = new LaneTrafficControlMessage(type);
         messageToSend.setPlaneId(message.getPlaneId());
         messageToSend.setRunaway(message.getRunwayId());
+        messageToSend.setGate(message.getGateId());
         messageToSend.setMetaInfo(metaInfo);
         try {
             ah = this.agent.getAdmLocal().getHandlerByAlias(atcState.getLtc().getAlias());

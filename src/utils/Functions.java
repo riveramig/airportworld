@@ -1,5 +1,12 @@
 package utils;
 
+import BESA.ExceptionBESA;
+import BESA.Kernel.Agent.Event.EventBESA;
+import BESA.Kernel.System.AdmBESA;
+import BESA.Kernel.System.Directory.AgHandlerBESA;
+import messages.WatcherMessage;
+import watcher.WatcherGuard;
+
 import java.util.Random;
 
 public class Functions {
@@ -19,6 +26,18 @@ public class Functions {
                 return start  + ((long)(Math.random() * (end - start)) + start);
             default:
                 return 0L;
+        }
+    }
+
+    public static synchronized void addDelay(long delay){
+        AdmBESA adm = AdmBESA.getInstance();
+        try {
+            AgHandlerBESA ah = adm.getHandlerByAlias("watcher");
+            WatcherMessage message = new WatcherMessage(delay);
+            EventBESA event = new EventBESA(WatcherGuard.class.getName(),message);
+            ah.sendEvent(event);
+        }catch (ExceptionBESA exceptionBESA) {
+            exceptionBESA.printStackTrace();
         }
     }
 }

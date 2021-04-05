@@ -21,6 +21,10 @@ import misc.Gate;
 import misc.Itinerary;
 import misc.Runway;
 import utils.CabinEnum;
+import watcher.WatcherAgent;
+import watcher.WatcherGuard;
+import watcher.WatcherGuardPeriodic;
+import watcher.WatcherState;
 
 
 public class airportUniverse {
@@ -32,30 +36,32 @@ public class airportUniverse {
 
         try {
             AdmBESA adm = AdmBESA.getInstance();
+            createWatcher(adm);
             Airport elDorado = buildElDorado();
             Airport madridAirport = buildMadrid();
+
+            //------------------------------------ SET-UP Avion 1 ----------------------------------------------
 
             PlaneAgent avianca01 = createPlaneAgent("avianca01",elDorado, CabinEnum.LARGE, elDorado.getGates()[0], elDorado.getRunaways()[0]);
             // Se adicionan los itinerarios
             // Itinerario avion 1 Este indica puertas de embarque y pistas a aterrizar en el aeropuerto de destino
-            Itinerary it1 = new Itinerary("madrid-g-0","madrid-r-0",madridAirport,15000);
-            avianca01.addItinerary(it1);
+            avianca01.addItinerary(new Itinerary("dorado-g-0","dorado-r-0",elDorado,16000));
+            avianca01.addItinerary(new Itinerary("madrid-g-0","madrid-r-0",madridAirport,15000));
             // Se hace set del gate occupied solo para set up
             elDorado.getGates()[0].setOccupied(true);
-            avianca01.start();
+            initOpsPlane(avianca01);
 
-            AgHandlerBESA ah = adm.getHandlerByAid(avianca01.getAid());
+            //-------------end set-up
 
-            // mensaje inicial radar
-            PeriodicDataBESA periodicData = new PeriodicDataBESA(PERIODIC_TIME, PeriodicGuardBESA.START_PERIODIC_CALL);
-            EventBESA eventPeriodic = new EventBESA(PlaneGuardPeriodic.class.getName(), periodicData);
-            ah.sendEvent(eventPeriodic);
-
-            // mensaje inicial
-            AgHandlerBESA ah2 = adm.getHandlerByAid(avianca01.getAid());
-            PlaneMessage planeMessage = new PlaneMessage(PlaneMessageType.WHERE_AM_I);
-            EventBESA msj = new EventBESA(PlaneGuard.class.getName(), planeMessage);
-            ah2.sendEvent(msj);
+            //------------------------------------ SET-UP Avion 2 ----------------------------------------------
+            PlaneAgent delta02 = createPlaneAgent("delta02",elDorado, CabinEnum.SMALL, elDorado.getGates()[1], elDorado.getRunaways()[0]);
+            // Se adicionan los itinerarios
+            // Itinerario avion. Este indica puertas de embarque y pistas a aterrizar en el aeropuerto de destino
+            delta02.addItinerary(new Itinerary("dorado-g-0","dorado-r-0",elDorado,16000));
+            delta02.addItinerary(new Itinerary("madrid-g-0","madrid-r-0",madridAirport,15000));
+            // Se hace set del gate occupied solo para set up
+            elDorado.getGates()[1].setOccupied(true);
+            initOpsPlane(delta02);
 
 
         } catch (Exception ex) {
@@ -63,10 +69,30 @@ public class airportUniverse {
         }
     }
 
+    public static void initOpsPlane(PlaneAgent plane) {
+        AdmBESA adm = AdmBESA.getInstance();
+        plane.start();
+        AgHandlerBESA ah = null;
+        try {
+            ah = adm.getHandlerByAid(plane.getAid());
+            // mensaje inicial radar
+            PeriodicDataBESA periodicData2 = new PeriodicDataBESA(PERIODIC_TIME, PeriodicGuardBESA.START_PERIODIC_CALL);
+            EventBESA eventPeriodic2 = new EventBESA(PlaneGuardPeriodic.class.getName(), periodicData2);
+            ah.sendEvent(eventPeriodic2);
+            // mensaje inicial
+            AgHandlerBESA ah2 = adm.getHandlerByAid(plane.getAid());
+            PlaneMessage planeMessage1 = new PlaneMessage(PlaneMessageType.WHERE_AM_I);
+            EventBESA msj2 = new EventBESA(PlaneGuard.class.getName(), planeMessage1);
+            ah2.sendEvent(msj2);
+        } catch (ExceptionBESA exceptionBESA) {
+            exceptionBESA.printStackTrace();
+        }
+    }
+
 
     public static Airport buildElDorado() {
         Gate[] gates = createGates("dorado-g",5);
-        Runway[] runways = createRunways("dorado-r",2);
+        Runway[] runways = createRunways("dorado-r",1);
         AirTrafficControlAgent atcDorado = createAgentATC("dorado-atc", runways);
         LaneTrafficControlAgent ltcDorado = createAgentLTC("dorado-ltc",gates);
         if(atcDorado == null || ltcDorado == null){
@@ -82,7 +108,7 @@ public class airportUniverse {
 
     public static Airport buildMadrid() {
         Gate[] gates = createGates("madrid-g",5);
-        Runway[] runways = createRunways("madrid-r",2);
+        Runway[] runways = createRunways("madrid-r",1);
         AirTrafficControlAgent atcMadrid = createAgentATC("madrid-atc", runways);
         LaneTrafficControlAgent ltcMadrid = createAgentLTC("madrid-ltc",gates);
         if(atcMadrid == null || ltcMadrid == null){
@@ -151,5 +177,23 @@ public class airportUniverse {
             runways[i].setOccupied(false);
         }
         return runways;
+    }
+
+    public static synchronized void createWatcher(AdmBESA adm){
+        WatcherState watcherState = new WatcherState();
+        StructBESA structWatcher = new StructBESA();
+        structWatcher.bindGuard(WatcherGuard.class);
+        structWatcher.bindGuard(WatcherGuardPeriodic.class);
+        try {
+            WatcherAgent watcherAgent = new WatcherAgent("watcher",watcherState,structWatcher,PSSWD);
+            watcherAgent.start();
+            AgHandlerBESA ah = adm.getHandlerByAlias("watcher");
+            PeriodicDataBESA periodicData2 = new PeriodicDataBESA(2000, PeriodicGuardBESA.START_PERIODIC_CALL);
+            EventBESA eventPeriodic2 = new EventBESA(WatcherGuardPeriodic.class.getName(), periodicData2);
+            ah.sendEvent(eventPeriodic2);
+            System.out.println("watcher createddd");
+        } catch (ExceptionBESA ex) {
+            ex.printStackTrace();
+        }
     }
 }

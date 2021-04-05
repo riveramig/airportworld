@@ -97,6 +97,8 @@ public class PlaneState extends StateBESA {
         return amIFilled;
     }
 
+    public boolean haveIAnotherItinerary(){return !this.itinerary.empty();}
+
     public void setAmIFilled(boolean amIFilled) {
         this.amIFilled = amIFilled;
     }
